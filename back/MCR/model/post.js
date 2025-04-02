@@ -1,3 +1,4 @@
+import { timeStamp } from 'console';
 import {Schema, mongoose} from 'mongoose';
 import { type } from 'os';
 
@@ -33,7 +34,7 @@ const postSchema = new mongoose.Schema({
     },
     
 
-}, {timeStamp:true});
+}, {timestamps:true});
 
 const Post = mongoose.model('Post', postSchema);
 export default Post;

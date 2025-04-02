@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
+import SaveJob from '../components/SaveJob'
 
 export default function JobDescription() {
+    const {id} = useParams()
     const navigate = useNavigate();
     const profile = JSON.parse(localStorage.getItem('profile')) || '';
-    // console.log(profile.id)
+
+    const [userProfile, setUserProfile] = useState({
+        saved:[]
+      }) 
+
     const [job, setJob] = useState({
         authorId:'',
         author:'',
@@ -16,11 +22,12 @@ export default function JobDescription() {
         location:'',
         description:''
     })
-    const {id} = useParams()
 
     const getJob = async() => {
         const response = await axios.get(`/api/post/${id}`)
         const data = response.data.post
+        console.log(data)
+        
         setJob({
             authorId: data.author[0]._id,
             author: data.author[0].name,
@@ -28,9 +35,25 @@ export default function JobDescription() {
             company:data.company,
             salary:data.salary,
             location:data.location,
-            description:data.description
+            description:data.description,
+            updatedAt: data.updatedAt.slice(0,10)
         })
     }
+
+    const getProfile = async() => {
+        const response = await axios.get(`/api/user/${profile.id}`)
+        const data = response.data
+        // console.log(data.user.saved)
+        try { 
+          setUserProfile({
+            saved: data.user.saved || []
+          
+          })
+        
+        } catch (error) {
+          console.log(error)
+        }
+      }
 
     const deletePost = async() => {
         const response = await axios.delete(`/api/post/delete/${id}`)
@@ -41,6 +64,7 @@ export default function JobDescription() {
 
     useEffect(() => {
         getJob()
+        getProfile()
     },[])
   return (
     <>  
@@ -55,7 +79,7 @@ export default function JobDescription() {
                     <p className="card-text">Salary: ${job.salary}</p>
                     <p className="card-text">Company: {job.company}</p>
                     <p className="card-text">Location: {job.location}</p>
-                    <p className="card-text">{job.description}</p>
+                    <p className="card-text">About the role: {job.description}</p>
                     <div className='d-flex gap-3'>
                         {profile.id === job.authorId ? (
                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -63,10 +87,12 @@ export default function JobDescription() {
                             </button>
                         ) : ''}
                         
-                        <button className="btn btn-success">Save <i className="bi bi-bookmark"></i></button>
+                        <SaveJob userProfile={userProfile} x={id} fetch={getProfile} />
                         <a href="#" className="btn btn-primary">Apply</a>
                     </div>
-                    <p className="card-text">Posted By: {job.author}</p>
+                    <p className="card-text my-4">Posted By: {job.author}</p>
+                    <p className="card-text my-4">Updated: {job.updatedAt}</p>
+
 
                     {/* <!-- Modal --> */}
                     <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -88,6 +114,11 @@ export default function JobDescription() {
                     </div>
                 </div>
             </div>
+            <a href={`/profile/${job.authorId}`}>
+                <button type="button" className="btn btn-info my-4">
+                    Go Back
+                </button>
+            </a>
         </div>
     </>
   )

@@ -1,4 +1,5 @@
 import User from "../model/user.js";
+import Post from "../model/post.js";
 import { generateToken } from "../../config/token.js";
 
 const login = async (req,res) => {
@@ -131,7 +132,7 @@ const getAll = async(req,res) => {
 // Get user by ID
 const getUser = async(req,res) => {
     const lookingFor = req.params.id;
-    const user = await User.findById(lookingFor).populate('posts');
+    const user = await User.findById(lookingFor).populate('posts').populate('saved');
     res.status(200).json({
         message : user ? "User found" : "user could not be found", 
         user: user ? user : "No details"})
@@ -154,6 +155,29 @@ const deleteUser = async(req,res) => {
     }
 }
 
+const savePost = async(req,res) => {
+    const {id} = req.params
+    const user = await User.findById(req.user._id)
+    // console.log(user)
+    const post = await Post.findById(id);
+    // console.log(post._id)
+    try {
+        const isSave = user.saved.includes(post._id)
+        if(isSave){
+            user.saved.pull(post._id);
+            await user.save();
+            return res.status(200).json({message:"Job unsaved!"})
+        } else{
+            user.saved.push(post._id);
+            await user.save()
+            return res.status(200).json({message:"Job saved!"})
+        }
+        
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 export {
     login, 
     signup,
@@ -162,4 +186,5 @@ export {
     getAll,
     getUser,
     deleteUser,
+    savePost
 }

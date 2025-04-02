@@ -7,17 +7,17 @@ const login = async (req,res) => {
     try {
         const user = await User.findOne({email})
 
+        if(!email || !password){
+            return res.status(400).json({message: `Please, enter your credentials.`})
+        }
+
         if(!user){
             return res.status(404).json({message: `This account is not registered.`})
         }
         
-        if(!email || !password){
-            return res.status(400).json({message: `Please, enter your credentials.`})
-        }
-        
         if(user && (await user.matchPassword(password))){
             req.session.name = user.name;
-            console.log(req.session.name)
+            // console.log(req.session.name)
             generateToken(res, user._id)
             return res.status(200).json({message:`Welcome, ${user.name}`, profile: user})
         } else{
@@ -81,7 +81,7 @@ const logout = async (req,res) => {
 const update = async (req, res) => {
     const {id} = req.params;
     const {
-        name, username, password, confirmPassword, email
+        name, username, password, passwordConfirmation, email, title, company, aboutMe
     } = req.body;
     const user = await User.findById(id)
     const verifyIfEmailExits = await User.findOne({email})
@@ -93,12 +93,12 @@ const update = async (req, res) => {
          }
      
          // check for password
-         if (password != confirmPassword){
-             res.status(404).send(`Passwords dont match`)
-     
+         if (password !== passwordConfirmation){
+             res.status(400).send(`Passwords dont match`)
+         }
      
          // verify email
-         } else if (verifyIfEmailExits && verifyIfEmailExits._id.toString() !== id){
+         if (verifyIfEmailExits && verifyIfEmailExits._id.toString() !== id){
              res.status(400).send(`'Email already in use. Please, use another email.'`)
      
          // if user does exist
@@ -107,6 +107,9 @@ const update = async (req, res) => {
              user.username = username;
              user.password = password;
              user.email = email;
+             user.title = title,
+             user.aboutMe = aboutMe,
+             user.company = company
              await user.save()
              res.status(200).json({message:`User updated successfully!`, user})
          } else{
@@ -114,6 +117,7 @@ const update = async (req, res) => {
          }
         
     } catch (error) {
+        console.log(error)
         throw new Error(error)
     }
 }

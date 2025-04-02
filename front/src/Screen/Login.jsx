@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.min';
+import ToastMessage from '../components/ToastMessage.jsx';
 
 export default function Login() {
-  const session = sessionStorage.getItem('notification')
-  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const [message, setMessage] = useState()  
   const [err, setErr] = useState();
   const [user, setUser] = useState({
       email: '',
@@ -16,9 +16,15 @@ export default function Login() {
     e.preventDefault()
     try {
       const response = await axios.post('/api/user/login', user);
-      // sessionStorage.setItem('notification', response.data.message)
-      console.log(response.data.message);
-      // navigate('/login');
+      const profile = {
+        id: response.data.profile._id,
+        name: response.data.profile.name,
+        username: response.data.profile.username
+      }
+      localStorage.setItem('profile', JSON.stringify(profile))
+      sessionStorage.setItem('notification', response.data.message)
+      setMessage(response.data.message)
+      navigate('/');
     } catch (error) {
       console.log(error.response?.data.message)
       const err = error.response?.data?.message;
@@ -29,41 +35,24 @@ export default function Login() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  
   useEffect(() => {
+    const session = sessionStorage.getItem('notification')
     if(session){
       setMessage(session)
-      sessionStorage.removeItem('notification')
+      setTimeout(() => {
+        sessionStorage.removeItem('notification');
+        // console.log('hello')
+    
+      }, 1000)
     }
+  },[])
 
-    setTimeout(() => {
-
-      const toastEl = document.getElementById('liveToast');
-      if (toastEl) {
-        const toast = new Toast(toastEl, { delay: 3000, autohide: true });
-        toast.show();
-      }
-    },100)
-  }, []);
-  
   return (
     <>
     <div className='container-md my-4'>
-      {message && (
-        <div className='d-flex justify-content-center align-items-center w-100 text-light ' aria-live="polite" aria-atomic="true">
 
-          <div className='toast rounded bg-success' id='liveToast'>
-
-            <div className='toast-header'>
-              <strong>Notification</strong>
-            </div>
-            <div className='toast-body'>
-              {message}, Please log in.
-            </div>
-
-          </div>
-        </div>
-
-      )}
+      <ToastMessage message={message}/>
 
 
       <form className='my-8' onSubmit={loginUser}>

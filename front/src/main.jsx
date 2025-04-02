@@ -13,19 +13,42 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
+import Home from './Screen/Home.jsx'
 
-
+// Registration
 import Login from "./Screen/Login.jsx"
 import Signup from "./Screen/Signup.jsx"
+
+// CRUD - User
+import Profile from './Screen/Profile.jsx'
+import Update from './Screen/Update.jsx'
+
+// CRUD - Post
+import Create from './Screen/Create.jsx'
+import JobDescription from './Screen/JobDescription.jsx'
+import UpdatePost from './Screen/UpdatePost.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
 
     <Route path='/' element={<App/>}>
 
+      {/* Home */}
+      <Route path='/' element={<Home/>} />
+
       {/* Registration */}
       <Route path='/login' element={<Login/>} />
       <Route path='/signup' element={<Signup/>} />
+
+      {/* CRUD */}
+      <Route path='/create' element={<Create/>} />
+      <Route path='/post/:id' element={<JobDescription/>} />
+      <Route path='/update/:id' element={<UpdatePost/>} />
+
+
+      {/* User */}
+      <Route path='/profile/:id' element={<Profile/>} />
+      <Route path='/profile/:id/update' element={<Update/>} />
 
     </Route>
   )

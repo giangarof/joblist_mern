@@ -3,11 +3,15 @@ import User from "../model/user.js"
 
 // create post
 const createPost = async (req,res) => {
-    const {title, description, salary, location, } = req.body;
+    const {title, description, salary, location, company} = req.body;
     // Get the body post
     const post = new Post(req.body);
     // find the user
     const user = await User.findById(req.user._id);
+
+    if(!title || !description || !salary || !location || !company){
+        return res.status(400).json({message: "Please fill up all fields."})
+    }
 
     try {
         // post.author object, attach id and the name
@@ -35,7 +39,7 @@ const findAll = async(req,res) => {
 // get one post
 const findPost = async (req,res) => {
     const {id} = req.params;
-    const post = await Post.findById(id).populate('reviews')
+    const post = await Post.findById(id)
     res.status(200).json({message:'Found', post})
     // console.log(post)
 }   
@@ -43,19 +47,22 @@ const findPost = async (req,res) => {
 // update post
 const update = async (req, res) => {
     const {id} = req.params;
-    const {title, description, salary, location} = req.body;
+    const {title, description, salary, location, company} = req.body;
     const post = await Post.findById(id)
 
     try {
         if(!post){
-            res.status(404).json({message:`Post doesn't exist, or it was deleted.`})
+            return res.status(404).json({message:`Post doesn't exist, or it was deleted.`})
         }
     
         if(post){
             post.title = title;
             post.description = description;
+            post.location = location;
+            post.salary = salary;
+            post.company = company;
             await post.save()
-            res.status(200).json({message:`Post Updated Successfully!`, post})
+            return res.status(200).json({message:`Post Updated Successfully!`, post})
         }
         
         
@@ -98,12 +105,12 @@ const deletePost = async (req,res) => {
 
     if(userIsAdmin){
         deletion()
-        res.status(401).json({message:`Deleted as admin.`})
+        return res.status(401).json({message:`Deleted as admin.`})
     } else if(!postOwner){
-        res.status(401).json({message:`You're not the owner of the post.`})
+        return res.status(401).json({message:`You're not the owner of the post.`})
     } else {
         deletion()
-        res.status(200).json({message:'Post deleted successfully!'})
+        return res.status(200).json({message:'Post deleted successfully!'})
     
     }
     // Two ways to compare the id's

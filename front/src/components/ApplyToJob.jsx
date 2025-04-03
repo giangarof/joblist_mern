@@ -1,8 +1,14 @@
 import React from 'react'
 import axios from 'axios'
 
-export default function ApplyToJob({userProfile, x, fetch}) {
-    // console.log(x)
+export default function ApplyToJob({ applicants, x, fetch, user }) {
+    // x = job id
+    // user = userId
+
+
+    // if userId is in the applicants array
+    const applied = applicants.some((i) => i || i_id === user)
+
     const applyToJob = async(id) => {
         try {
             const response = await axios.post(`/api/post/apply/${id}`)
@@ -10,13 +16,13 @@ export default function ApplyToJob({userProfile, x, fetch}) {
             fetch()
             
         } catch (error) {
-            console.log(error)
+            console.log(error.response?.data?.message)
             
         }
       }
   return (
     <>
-        {userProfile.applied.some((i) => i._id === x) ? (
+        {applied ? (
             <>
                 <button className="btn btn-danger" onClick={() => applyToJob(x)}>Cancel application</button>
             </>

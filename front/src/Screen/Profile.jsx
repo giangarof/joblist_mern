@@ -3,11 +3,17 @@ import ToastMessage from '../components/ToastMessage'
 import axios from 'axios'
 import SaveJob from '../components/SaveJob'
 import ApplyToJob from '../components/ApplyToJob'
+import Spinner from '../components/Spinner'
+import { useParams } from 'react-router-dom'
 
 export default function Profile() {
+  const {id} = useParams()
   const user = JSON.parse(localStorage.getItem('profile'))
   const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
   const [userProfile, setUserProfile] = useState({
+    id:'',
     name: '',
     username: '',
     title: '',
@@ -16,44 +22,83 @@ export default function Profile() {
     aboutMe: '',
     saved:[],
     applied:[],
-    applicants:[]
+    // applicants:[]
   }) 
   const [posts, setPosts] = useState([]);
-  
-  const getProfile = async() => {
-    const response = await axios.get(`/api/user/${user.id}`)
-    const data = response.data
-    console.log(data.user.posts)
-    try { 
-      const formatted = data.user.posts.map(post => ({
+
+  const url = async() => {
+    const response = await axios.get(`/api/user/${id}`)
+    const data = response.data.user;
+    try {
+      setIsLoading(true)
+      const formatted = data.posts.map(post => ({
         ...post,
         // created: post.createdAt.slice(0,10),
         updated: post.updatedAt.slice(0,10),
-        applicants: post.applicants
-
+        // applicants: data.user.posts || []
+  
       }))     
       setPosts(formatted)
       setUserProfile({
-        name: data.user.name || '',
-        username: data.user.username || '',
-        title: data.user.title || '',
-        company: data.user.company || '',
-        email: data.user.email || '',
-        aboutMe: data.user.aboutMe || '',
-        saved: data.user.saved || [],
-        applied: data.user.applied || [],
-        applicants: data.user.posts.applicants || []
+        id: data._id || '',
+        name: data.name || '',
+        username: data.username || '',
+        title: data.title || '',
+        company: data.company || '',
+        email: data.email || '',
+        aboutMe: data.aboutMe || '',
+        saved: data.saved || [],
+        applied: data.applied || [],
+        // applicants: data.user.posts.map(x => x.applicants) || []
       
       })
-    
+      
     } catch (error) {
       console.log(error)
+    }finally{
+      setIsLoading(false)
     }
   }
+  
+  // const getProfile = async() => {
+  //   const response = await axios.get(`/api/user/${user.id}`)
+  //   const data = response.data
+  //   setIsLoading(true)
+  //   // console.log(data.user.posts.map(x => x.applicants))
+  //   try { 
+  //     const formatted = data.user.posts.map(post => ({
+  //       ...post,
+  //       // created: post.createdAt.slice(0,10),
+  //       updated: post.updatedAt.slice(0,10),
+  //       // applicants: data.user.posts || []
+
+  //     }))     
+  //     setPosts(formatted)
+  //     setUserProfile({
+  //       id: data.user._id || '',
+  //       name: data.user.name || '',
+  //       username: data.user.username || '',
+  //       title: data.user.title || '',
+  //       company: data.user.company || '',
+  //       email: data.user.email || '',
+  //       aboutMe: data.user.aboutMe || '',
+  //       saved: data.user.saved || [],
+  //       applied: data.user.applied || [],
+  //       // applicants: data.user.posts.map(x => x.applicants) || []
+      
+  //     })
+    
+  //   } catch (error) {
+  //     console.log(error)
+  //   } finally{
+  //     setIsLoading(false)
+  //   }
+  // }
   // console.log(posts.map(post => post.applicants.length)) 
 
   useEffect(() => {
-      getProfile();
+      // getProfile();
+      url()
 
       const session = sessionStorage.getItem('notification')
       if(session){
@@ -64,10 +109,13 @@ export default function Profile() {
         }, 1000)
       }
     },[user.id])
-    // console.log(userProfile)
+    
 
   return (
     <>
+      {isLoading ? (<>
+        <Spinner />
+      </>) : (<>
       <div className='container-md my-4'>
         <ToastMessage  message={message}/>
 
@@ -174,10 +222,10 @@ export default function Profile() {
                 <h1 className="modal-title fs-5" id="exampleModalLabel">Current applications</h1>
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div className="modal-body d-flex">
-                <p>You have {posts.map(post => post.applicants.length)} applicant at:</p>
-                {userProfile.applied.map(x => (
+              <div className="modal-body">
+                {posts.map((x) => (
                   <div key={x._id}>
+                    You have {x.applicants.length} At: 
                     <a href={`/post/${x._id}`} className='mx-1'>{x.title} At {x.company}</a>
                   </div>
                 ))}
@@ -215,14 +263,13 @@ export default function Profile() {
                             <div className="modal-dialog">
                               <div className="modal-content">
                                 <div className="modal-header">
-                                  <h1 className="modal-title fs-5" id="exampleModalLabel">Current applications</h1>
+                                  <h1 className="modal-title fs-5" id="exampleModalLabel">Available options</h1>
                                   <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div className="modal-body d-flex gap-1">
-                                  <SaveJob userProfile={userProfile} x={x._id} fetch={getProfile}/>
-                                  <ApplyToJob userProfile={userProfile} x={x._id} fetch={getProfile}/>
-                                  
-                                  
+                                  <SaveJob userProfile={userProfile} x={x._id} fetch={url}/>
+                                  <ApplyToJob applicants={x.applicants} x={x._id} user={userProfile.id} fetch={url}/>
+
                                 </div>
                                 <div className="modal-footer">
                                   <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -241,6 +288,7 @@ export default function Profile() {
           
 
       </div>
+      </>)}
     </>
   )
 }

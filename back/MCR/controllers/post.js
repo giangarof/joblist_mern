@@ -26,8 +26,6 @@ const createPost = async (req,res) => {
     } catch (error) {
         throw new Error(error)
     }
-
-
 }
 
 // get all posts
@@ -39,7 +37,7 @@ const findAll = async(req,res) => {
 // get one post
 const findPost = async (req,res) => {
     const {id} = req.params;
-    const post = await Post.findById(id)
+    const post = await Post.findById(id).populate('applicants')
     res.status(200).json({message:'Found', post})
     // console.log(post)
 }   

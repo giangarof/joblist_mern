@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 
 export default function SaveJob({userProfile, x, fetch}) {
+    //x = job id 
     // console.log(x)
 
     const savePost = async(i) => {

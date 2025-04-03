@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import SaveJob from '../components/SaveJob'
+import ApplyToJob from '../components/ApplyToJob';
 
 export default function JobDescription() {
     const {id} = useParams()
@@ -10,25 +11,33 @@ export default function JobDescription() {
     const profile = JSON.parse(localStorage.getItem('profile')) || '';
 
     const [userProfile, setUserProfile] = useState({
-        saved:[]
+        saved:[],
+        profileId:''
       }) 
 
     const [job, setJob] = useState({
+        id: '',
         authorId:'',
         author:'',
         title:'',
         company:'',
         salary:'',
         location:'',
-        description:''
+        description:'',
+        applicants:[],
+        // applicantsId:[],
+        // applicantTitle:[]
+        // applicants:[{
+        // }],
     })
 
     const getJob = async() => {
         const response = await axios.get(`/api/post/${id}`)
         const data = response.data.post
-        console.log(data)
+        // console.log(data.applicants)
         
         setJob({
+            id: data._id,
             authorId: data.author[0]._id,
             author: data.author[0].name,
             title:data.title,
@@ -36,18 +45,26 @@ export default function JobDescription() {
             salary:data.salary,
             location:data.location,
             description:data.description,
-            updatedAt: data.updatedAt.slice(0,10)
+            updatedAt: data.updatedAt.slice(0,10),
+            applicants: data.applicants
+            // applicant: data.applicants.map(x => x.name),
+            // applicantId: data.applicants.map(x => x._id),
+            // applicantTitle: data.applicants.map(x => x.title),
+            // applicants: {
+
+            // }
         })
     }
+    console.log(job.author, job.authorId)
 
     const getProfile = async() => {
         const response = await axios.get(`/api/user/${profile.id}`)
         const data = response.data
-        // console.log(data.user.saved)
+        // console.log(data)
         try { 
           setUserProfile({
-            saved: data.user.saved || []
-          
+            saved: data.user.saved || [],
+            profileId: data.user._id
           })
         
         } catch (error) {
@@ -63,12 +80,17 @@ export default function JobDescription() {
     }
 
     useEffect(() => {
-        getJob()
         getProfile()
+        getJob()
     },[])
   return (
     <>  
         <div className='container my-4'>
+            <a href={`/profile/${job.authorId}`}>
+                <button type="button" className="btn btn-info my-4">
+                    Go Back
+                </button>
+            </a>
 
             <div className="card">
                 <div className="card-header">
@@ -88,9 +110,9 @@ export default function JobDescription() {
                         ) : ''}
                         
                         <SaveJob userProfile={userProfile} x={id} fetch={getProfile} />
-                        <a href="#" className="btn btn-primary">Apply</a>
+                        <ApplyToJob applicants={job.applicants} x={job.id} fetch={getJob} user={userProfile.profileId}/>
                     </div>
-                    <p className="card-text my-4">Posted By: {job.author}</p>
+                    <p className="card-text my-4">Posted By: <a href={`/profile/${job.authorId}`}>{job.author}</a> </p>
                     <p className="card-text my-4">Updated: {job.updatedAt}</p>
 
 
@@ -114,11 +136,28 @@ export default function JobDescription() {
                     </div>
                 </div>
             </div>
-            <a href={`/profile/${job.authorId}`}>
-                <button type="button" className="btn btn-info my-4">
-                    Go Back
-                </button>
-            </a>
+            
+            {profile.id === job.authorId ? (
+                            
+                <div className='my-3'>
+
+                    {/* Current Applicants */}
+                    <button className="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        Current Applicants
+                    </button>
+                    <div className="collapse" id="collapseExample">
+                        {job.applicants.map((x) => (
+                            <div className="card card-body" key={x._id}>
+                                    <a href={`/profile/${x._id}`}>
+                                        {x.name} - {x.title}
+                                    </a>
+
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                ) : ''
+            }
         </div>
     </>
   )

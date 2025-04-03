@@ -119,10 +119,41 @@ const deletePost = async (req,res) => {
 
 }
 
+const applyToJob = async(req,res) => {
+    const {id} = req.params
+    const post = await Post.findById(id)
+    const user = await User.findById(req.user._id)
+    // console.log(user.applied)
+    const appliedUser = user.applied.includes(post._id)
+    const appliedPost = post.applicants.includes(user._id)
+    
+    // return res.status(200).json({message:user})
+    // console.log(user._id)
+    try {
+        if(appliedUser){
+            user.applied.pull(post._id);
+            post.applicants.pull(user._id)
+            await user.save();
+            await post.save()
+            return res.status(200).json({message:"Application canceled"})
+        } else {
+            user.applied.push(post._id);
+            post.applicants.push(user._id)
+            await user.save();
+            await post.save()
+            return res.status(200).json({message:"Applied!"})
+        }
+    } catch (error) {
+        // throw new Error(error)
+        return res.status(400).json({message:error})
+    }
+}
+
 export {
     findAll,
     createPost,
     findPost,
     deletePost,
     update,
+    applyToJob
 }

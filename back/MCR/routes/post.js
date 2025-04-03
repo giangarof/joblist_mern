@@ -11,7 +11,8 @@ import {
     findAll,
     findPost,
     deletePost,
-    update
+    update,
+    applyToJob
 
 } from '../controllers/post.js';
 import asyncHandler from '../../middleware/asyncHandler.js';
@@ -20,6 +21,7 @@ router.get('/', asyncHandler(findAll))
 router.get('/:id', asyncHandler(findPost))
 
 router.post('/create', protect, asyncHandler(createPost))
+router.post('/apply/:id', protect, asyncHandler(applyToJob))
 
 router.put('/update/:id', protect, Admin_Or_Owner_Post, asyncHandler(update))
 router.delete('/delete/:id', protect, Admin_Or_Owner_Post, asyncHandler(deletePost))

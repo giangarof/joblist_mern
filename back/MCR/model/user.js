@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
     saved:[{
         type: Schema.Types.ObjectId,
         ref: 'Post'
+    }],
+    applied:[{
+        type: Schema.Types.ObjectId,
+        ref: 'Post'
     }]
 })
 

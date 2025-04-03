@@ -12,6 +12,7 @@ import {
     getUser,
     deleteUser,
     savePost,
+    applyToJob,
     
 } from '../controllers/user.js'
 
@@ -21,6 +22,7 @@ router.get('/getall', protect, administrator, asyncHandler(getAll))
 router.get('/:id', protect, asyncHandler(getUser))
 
 router.post('/savepost/:id', protect, asyncHandler(savePost))
+router.post('/apply/:id', protect, asyncHandler(applyToJob))
 
 router.post('/login', asyncHandler(login))
 router.post('/signup', asyncHandler(signup))

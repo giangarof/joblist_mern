@@ -32,6 +32,10 @@ const postSchema = new mongoose.Schema({
         type:String,
         // required: true
     },
+    applicants: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }]
     
 
 }, {timestamps:true});

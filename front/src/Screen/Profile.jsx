@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ToastMessage from '../components/ToastMessage'
 import axios from 'axios'
 import SaveJob from '../components/SaveJob'
+import ApplyToJob from '../components/ApplyToJob'
 
 export default function Profile() {
   const user = JSON.parse(localStorage.getItem('profile'))
@@ -13,19 +14,22 @@ export default function Profile() {
     company: '',
     email: '',
     aboutMe: '',
-    saved:[]
+    saved:[],
+    applied:[],
+    applicants:[]
   }) 
   const [posts, setPosts] = useState([]);
   
   const getProfile = async() => {
     const response = await axios.get(`/api/user/${user.id}`)
     const data = response.data
-    console.log(data.user)
+    console.log(data.user.posts)
     try { 
       const formatted = data.user.posts.map(post => ({
         ...post,
         // created: post.createdAt.slice(0,10),
         updated: post.updatedAt.slice(0,10),
+        applicants: post.applicants
 
       }))     
       setPosts(formatted)
@@ -36,7 +40,9 @@ export default function Profile() {
         company: data.user.company || '',
         email: data.user.email || '',
         aboutMe: data.user.aboutMe || '',
-        saved: data.user.saved || []
+        saved: data.user.saved || [],
+        applied: data.user.applied || [],
+        applicants: data.user.posts.applicants || []
       
       })
     
@@ -44,17 +50,7 @@ export default function Profile() {
       console.log(error)
     }
   }
-
-  const savePost = async(i) => {
-    try {
-      const response = await axios.post(`/api/user/savepost/${i}`)
-      console.log(response.data.message)
-      getProfile()
-      
-    } catch (error) {
-      console.log(error.response?.data?.message)
-    }
-  }
+  // console.log(posts.map(post => post.applicants.length)) 
 
   useEffect(() => {
       getProfile();
@@ -68,7 +64,7 @@ export default function Profile() {
         }, 1000)
       }
     },[user.id])
-    console.log(userProfile)
+    // console.log(userProfile)
 
   return (
     <>
@@ -81,17 +77,27 @@ export default function Profile() {
           <span>{userProfile.title} @{userProfile.company}</span>
         </div>
 
-        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aboutME">
-          About me
-        </button>
-        <a href={`/profile/${user.id}/update`} className='m-3'>
-          <button type="button" className="btn btn-info">  
-            Update Profile
+        <div className='d-flex flex-row justify-center gap-1'>
+          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aboutME">
+            About me
           </button>
-        </a>
-        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Saved">
-          Saved Jobs
-        </button>
+          <a href={`/profile/${user.id}/update`}>
+            <button type="button" className="btn btn-info">  
+              Update Profile
+            </button>
+          </a>
+          <button type="button" className="btn btn-primary " data-bs-toggle="modal" data-bs-target="#Saved">
+            Saved Jobs
+          </button>
+
+          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#application">
+            My applications
+          </button>
+
+          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applicants">
+            Job Applicants
+          </button>
+        </div>
 
         {/* <!-- Modal about me --> */}
         <div className="modal fade" id="aboutME" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -136,6 +142,55 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* <!-- Modal Applications --> */}
+        <div className="modal fade" id="application" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel">Current applications</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                {userProfile.applied.map(x => (
+                  <div key={x._id}>
+                    <a href={`/post/${x._id}`}>{x.title} At {x.company}</a>
+                  </div>
+                ))}
+                
+                
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         {/* <!-- Modal Applications --> */}
+         <div className="modal fade" id="applicants" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel">Current applications</h1>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body d-flex">
+                <p>You have {posts.map(post => post.applicants.length)} applicant at:</p>
+                {userProfile.applied.map(x => (
+                  <div key={x._id}>
+                    <a href={`/post/${x._id}`} className='mx-1'>{x.title} At {x.company}</a>
+                  </div>
+                ))}
+                
+                
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className='my-4'>
           <p>Publications</p>
           {/* <div className="container"> */}
@@ -145,13 +200,36 @@ export default function Profile() {
                 <div className='col-md-6 col-lg-4 col-sm-12 g-sm-3 g-3' key={x._id}>
                     <div className="card g-sm-3">
                       <div className="card-body">
-                        <h5 className="card-title">{x.title}</h5>
+                        <h5 className="card-title text-truncate">{x.title}</h5>
                         <p className="card-text text-truncate">{x.description}</p>
                         <p>At {x.company}</p>
                         <p>Updated: {x.updated}</p>
                         <div className='d-flex gap-2'>
+                          <button type="button" className="btn btn-info" data-bs-toggle="modal" data-bs-target={`#options-${x._id}`}>
+                            Options
+                          </button>
                           <a href={`/post/${x._id}`} className="btn btn-primary">See Job</a>
-                          <SaveJob userProfile={userProfile} x={x._id} fetch={getProfile}/>
+                          
+                          {/* <!-- Modal options --> */}
+                          <div className="modal fade" id={`options-${x._id}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div className="modal-dialog">
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h1 className="modal-title fs-5" id="exampleModalLabel">Current applications</h1>
+                                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div className="modal-body d-flex gap-1">
+                                  <SaveJob userProfile={userProfile} x={x._id} fetch={getProfile}/>
+                                  <ApplyToJob userProfile={userProfile} x={x._id} fetch={getProfile}/>
+                                  
+                                  
+                                </div>
+                                <div className="modal-footer">
+                                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -160,7 +238,7 @@ export default function Profile() {
             </div>
           {/* </div> */}
         </div>
-            
+          
 
       </div>
     </>

@@ -132,7 +132,7 @@ const getAll = async(req,res) => {
 // Get user by ID
 const getUser = async(req,res) => {
     const lookingFor = req.params.id;
-    const user = await User.findById(lookingFor).populate('posts').populate('saved');
+    const user = await User.findById(lookingFor).populate('posts').populate('saved').populate('applied');
     res.status(200).json({
         message : user ? "User found" : "user could not be found", 
         user: user ? user : "No details"})
@@ -178,6 +178,28 @@ const savePost = async(req,res) => {
     }
 }
 
+const applyToJob = async(req,res) => {
+    const {id} = req.params
+    const post = await Post.findById(id)
+    const user = await User.findById(req.user._id)
+    console.log(user.applied)
+    const applied = user.applied.includes(post._id)
+    try {
+        if(applied){
+            user.applied.pull(post._id);
+            await user.save();
+            return res.status(200).json({message:"Applied!"})
+        } else {
+            user.applied.push(post._id);
+            await user.save()
+            return res.status(200).json({message:"Application canceled"})
+        }
+    } catch (error) {
+        throw new Error(error)
+        // return res.status(200).json({message:'applied'})
+    }
+}
+
 export {
     login, 
     signup,
@@ -186,5 +208,6 @@ export {
     getAll,
     getUser,
     deleteUser,
-    savePost
+    savePost,
+    applyToJob
 }

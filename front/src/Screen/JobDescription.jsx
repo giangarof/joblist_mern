@@ -45,6 +45,7 @@ export default function JobDescription() {
             salary:data.salary,
             location:data.location,
             description:data.description,
+            requirements: data.requirements,
             updatedAt: data.updatedAt.slice(0,10),
             applicants: data.applicants
             // applicant: data.applicants.map(x => x.name),
@@ -102,6 +103,7 @@ export default function JobDescription() {
                     <p className="card-text">Company: {job.company}</p>
                     <p className="card-text">Location: {job.location}</p>
                     <p className="card-text">About the role: {job.description}</p>
+                    <p className="card-text">Requirements: {job.requirements}</p>
                     <div className='d-flex gap-3'>
                         {profile.id === job.authorId ? (
                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">

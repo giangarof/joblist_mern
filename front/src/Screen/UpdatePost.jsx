@@ -10,6 +10,7 @@ export default function UpdatePost() {
     salary:'',
     location:'',
     description:'',
+    requirements: ''
   })
   const {id} = useParams()
   const navigate = useNavigate()
@@ -24,17 +25,18 @@ export default function UpdatePost() {
       company:data.company ?? prev.company,
       salary:data.salary ?? prev.salary,
       location:data.location ?? prev.location,
-      description:data.description ?? prev.description
+      description:data.description ?? prev.description,
+      requirements:data.requirements ?? prev.requirements
     }))
   }
 
   const updatePost= async(e) => {
         e.preventDefault()
         const data = {...post}
-        console.log(data)
+        // console.log(data)
         try {
             const response = await axios.put(`/api/post/update/${id}`, data)
-            console.log(response.data.message)
+            // console.log(response.data.message)
             sessionStorage.setItem('notification', response.data.message)
             navigate(`/profile/${profile.id}`)
             
@@ -73,6 +75,10 @@ export default function UpdatePost() {
     <div>
       <label htmlFor="description" className="form-label">Description</label>
       <input name='description' type='text' className="form-control" id="description" aria-describedby="description" value={post.description} onChange={handleChange}/>
+    </div>
+    <div>
+      <label htmlFor="requirements" className="form-label">Requirements</label>
+      <input name='requirements' type='text' className="form-control" id="requirements" aria-describedby="requirements" value={post.requirements} onChange={handleChange}/>
     </div>
     
     <button type='submit' className=' my-4 btn text-light bg-success bg-gradient'>Update</button>

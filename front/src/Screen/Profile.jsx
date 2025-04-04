@@ -59,45 +59,8 @@ export default function Profile() {
       setIsLoading(false)
     }
   }
-  
-  // const getProfile = async() => {
-  //   const response = await axios.get(`/api/user/${user.id}`)
-  //   const data = response.data
-  //   setIsLoading(true)
-  //   // console.log(data.user.posts.map(x => x.applicants))
-  //   try { 
-  //     const formatted = data.user.posts.map(post => ({
-  //       ...post,
-  //       // created: post.createdAt.slice(0,10),
-  //       updated: post.updatedAt.slice(0,10),
-  //       // applicants: data.user.posts || []
-
-  //     }))     
-  //     setPosts(formatted)
-  //     setUserProfile({
-  //       id: data.user._id || '',
-  //       name: data.user.name || '',
-  //       username: data.user.username || '',
-  //       title: data.user.title || '',
-  //       company: data.user.company || '',
-  //       email: data.user.email || '',
-  //       aboutMe: data.user.aboutMe || '',
-  //       saved: data.user.saved || [],
-  //       applied: data.user.applied || [],
-  //       // applicants: data.user.posts.map(x => x.applicants) || []
-      
-  //     })
-    
-  //   } catch (error) {
-  //     console.log(error)
-  //   } finally{
-  //     setIsLoading(false)
-  //   }
-  // }
-  // console.log(posts.map(post => post.applicants.length)) 
 
   useEffect(() => {
-      // getProfile();
       url()
 
       const session = sessionStorage.getItem('notification')
@@ -108,44 +71,53 @@ export default function Profile() {
       
         }, 1000)
       }
-    },[user.id])
-    
+    },[user.id])    
 
   return (
     <>
       {isLoading ? (<>
         <Spinner />
       </>) : (<>
-      <div className='container-md my-4'>
+      <div className='container-md my-1'>
         <ToastMessage  message={message}/>
 
-        <div className='container bg-secondary-subtle rounded py-4 my-4 w-100'>
-          <p>{userProfile.name}</p>
-          <p>Username: {userProfile.username}</p>
-          <span>{userProfile.title} @{userProfile.company}</span>
+        <div className='container bg-secondary-subtle rounded'>
+          <div className='my-3 py-2'>
+            <p>{userProfile.name}</p>
+            <p>Username: {userProfile.username}</p>
+            <span>{userProfile.title} @{userProfile.company}</span> 
+
+          </div>
+
+          <div className='d-flex gap-2 py-2'>
+            <div>
+              <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aboutME">
+                About me
+              </button> 
+            </div>
+            {id === user.id ? (
+              <div className="btn-group">
+                <button type="button" className="btn btn-info">Settings</button>
+                <button type="button" className="btn btn-info dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span className="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul className="dropdown-menu">
+                  <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#Saved">Saved Jobs</button></li>
+                  <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#application">My applications</button></li>
+                  <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#applicants">Job Applicants</button></li>
+                  <li><hr className="dropdown-divider"/></li>
+                  <li><button href={`/profile/${user.id}/update`} className='dropdown-item'>
+                      Update Profile
+                  </button></li>
+                </ul>
+              </div>
+              
+                
+            ) : ''}
+          </div>
         </div>
 
-        <div className='d-flex flex-row justify-center gap-1'>
-          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aboutME">
-            About me
-          </button>
-          <a href={`/profile/${user.id}/update`}>
-            <button type="button" className="btn btn-info">  
-              Update Profile
-            </button>
-          </a>
-          <button type="button" className="btn btn-primary " data-bs-toggle="modal" data-bs-target="#Saved">
-            Saved Jobs
-          </button>
 
-          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#application">
-            My applications
-          </button>
-
-          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applicants">
-            Job Applicants
-          </button>
-        </div>
 
         {/* <!-- Modal about me --> */}
         <div className="modal fade" id="aboutME" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

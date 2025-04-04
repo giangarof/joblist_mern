@@ -3,13 +3,13 @@ import User from "../model/user.js"
 
 // create post
 const createPost = async (req,res) => {
-    const {title, description, salary, location, company} = req.body;
+    const {title, description, salary, location, company, requirements} = req.body;
     // Get the body post
     const post = new Post(req.body);
     // find the user
     const user = await User.findById(req.user._id);
 
-    if(!title || !description || !salary || !location || !company){
+    if(!title || !description || !salary || !location || !company || !requirements){
         return res.status(400).json({message: "Please fill up all fields."})
     }
 
@@ -30,8 +30,14 @@ const createPost = async (req,res) => {
 
 // get all posts
 const findAll = async(req,res) => {
-    const posts = await Post.find({})
-    res.status(200).json({posts})
+    const keyword = req.query.keyword ? {title: {$regex: req.query.keyword, $options: 'i'}} : {};
+    try {
+        const posts = await Post.find({...keyword})
+        return res.status(200).json({posts})
+        
+    } catch (error) {
+        return res.status(400).json({message:error})
+    }
 }
 
 // get one post
@@ -45,7 +51,7 @@ const findPost = async (req,res) => {
 // update post
 const update = async (req, res) => {
     const {id} = req.params;
-    const {title, description, salary, location, company} = req.body;
+    const {title, description, salary, location, company, requirements} = req.body;
     const post = await Post.findById(id)
 
     try {
@@ -56,6 +62,7 @@ const update = async (req, res) => {
         if(post){
             post.title = title;
             post.description = description;
+            post.requirements = requirements;
             post.location = location;
             post.salary = salary;
             post.company = company;

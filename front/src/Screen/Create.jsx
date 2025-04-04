@@ -11,7 +11,8 @@ export default function Create() {
         description:'',
         company:'',
         salary:'',
-        location:''
+        location:'',
+        requirements:'',
     })
 
     const createPost = async(e) => {
@@ -54,6 +55,10 @@ export default function Create() {
         <div>
           <label htmlFor="location" className="form-label">Location</label>
           <input name="location" className="form-control" id="location" aria-describedby="location" value={post.location} onChange={handleChange}/>
+        </div>
+        <div>
+          <label htmlFor="requirements" className="form-label">Requirements</label>
+          <input name="requirements" className="form-control" id="requirements" aria-describedby="requirements" value={post.requirements} onChange={handleChange}/>
         </div>
         <button type='submit' className=' my-4 btn text-light bg-success bg-gradient'>Create Job</button>
       </form>

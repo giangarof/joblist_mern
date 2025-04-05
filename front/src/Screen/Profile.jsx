@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom'
 
 export default function Profile() {
   const {id} = useParams()
-  const user = JSON.parse(localStorage.getItem('profile'))
+  const user = JSON.parse(localStorage.getItem('profile')) ?? ''
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -29,6 +29,7 @@ export default function Profile() {
   const url = async() => {
     const response = await axios.get(`/api/user/${id}`)
     const data = response.data.user;
+    console.log(data._id)
     try {
       setIsLoading(true)
       const formatted = data.posts.map(post => ({
@@ -52,7 +53,8 @@ export default function Profile() {
         // applicants: data.user.posts.map(x => x.applicants) || []
       
       })
-      
+      // sessionStorage.setItem('notification', response.data.message)
+      // console.log(response.data.message)
     } catch (error) {
       console.log(error)
     }finally{
@@ -71,7 +73,7 @@ export default function Profile() {
       
         }, 1000)
       }
-    },[user.id])    
+    },[])  
 
   return (
     <>
@@ -81,12 +83,19 @@ export default function Profile() {
       <div className='container-md my-1'>
         <ToastMessage  message={message}/>
 
+
         <div className='container bg-secondary-subtle rounded'>
           <div className='my-3 py-2'>
             <p>{userProfile.name}</p>
             <p>Username: {userProfile.username}</p>
-            <span>{userProfile.title} @{userProfile.company}</span> 
+            {userProfile.title && userProfile.company ? (
 
+              <span>{userProfile.title} @ {userProfile.company}</span> 
+            ) : (
+              <>
+                <span>No work added</span>
+              </>
+            )}
           </div>
 
           <div className='d-flex gap-2 py-2'>
@@ -106,9 +115,9 @@ export default function Profile() {
                   <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#application">My applications</button></li>
                   <li><button className="dropdown-item" data-bs-toggle="modal" data-bs-target="#applicants">Job Applicants</button></li>
                   <li><hr className="dropdown-divider"/></li>
-                  <li><button href={`/profile/${user.id}/update`} className='dropdown-item'>
+                  <a href={`/profile/${userProfile.id}/update`} className='dropdown-item'>
                       Update Profile
-                  </button></li>
+                  </a>
                 </ul>
               </div>
               
@@ -128,8 +137,16 @@ export default function Profile() {
                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div className="modal-body">
-                {userProfile.aboutMe}
-                <p>Currently I do work at {userProfile.company} as {userProfile.title}</p>
+                {userProfile.aboutMe && userProfile.title && userProfile.company? (
+                  <>
+                  <span>{userProfile.aboutMe}</span> 
+                  <p>Currently I do work at {userProfile.company} as {userProfile.title}</p>
+                  </>
+                ) : (
+                <>
+                  <span>No description added...</span>
+                </>
+                )}
                 
               </div>
               <div className="modal-footer">

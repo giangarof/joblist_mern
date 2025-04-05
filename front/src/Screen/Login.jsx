@@ -55,7 +55,7 @@ export default function Login() {
       <ToastMessage message={message}/>
 
 
-      <form className='my-8' onSubmit={loginUser}>
+      <form onSubmit={loginUser}>
         {err && <div className="alert alert-danger">{err}</div>}
         <div>
           <label htmlFor="email" className="form-label">Email address</label>
@@ -67,6 +67,7 @@ export default function Login() {
         </div>
         <button type='submit' className='my-4 btn text-light bg-success bg-gradient'>Login</button>
       </form>
+      <p>You dont have an account? <a href={`/signup`}>Sign up!</a> </p>
     </div>
     </>
       

@@ -4,7 +4,7 @@ import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 export default function ToastMessage({message}) {
   const [notification, setNotification] = useState('');
-  const session = sessionStorage.getItem('notification')
+  const session = sessionStorage.getItem('notification');
     
   useEffect(() => {
     if(session){
@@ -20,11 +20,11 @@ export default function ToastMessage({message}) {
         sessionStorage.removeItem('notification');
       },100)
     }
-  }, [notification])
+  }, [])
   return (
     <>
-        {notification && (
-        <div className='d-flex justify-content-center align-items-center w-100 text-light ' aria-live="polite" aria-atomic="true">
+        {notification ? (
+        <div className='d-flex justify-content-center align-items-center w-100 text-light position-relative' aria-live="polite" aria-atomic="true">
 
           <div className='toast rounded bg-success' id='liveToast'>
 
@@ -38,7 +38,7 @@ export default function ToastMessage({message}) {
           </div>
         </div>
 
-      )}
+      ) : ''}
     </>
   )
 }

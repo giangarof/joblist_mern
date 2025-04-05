@@ -4,6 +4,7 @@ import { Toast, Carousel  } from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import ToastMessage from './ToastMessage';
 
 export default function CarouselComponent({posts, fetch}) {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -34,6 +35,7 @@ export default function CarouselComponent({posts, fetch}) {
         height: '50vh',  // Takes up full viewport height
         position: 'relative',  // To keep carousel in the image container
       }}>
+        <ToastMessage/>
       <div id="carouselExampleDark" className='carousel-dark'>
           <div className=''>
               <div className="carousel-indicators ">
@@ -51,7 +53,7 @@ export default function CarouselComponent({posts, fetch}) {
               </div>
 
               {posts.map((post,index) => (
-                <div key={post._id} className={`carousel-item ${index === activeIndex ? 'active' : ''}`} data-bs-interval="10000">
+                <div key={post._id} className={`my-5 carousel-item ${index === activeIndex ? 'active' : ''}`} data-bs-interval="10000">
                   <div className="grid align-items-center my-5 opacity-75" >
                     <div className='row justify-content-center align-iems-center'>
                       <div className='col-12 text-center bg-secondary-subtle'>

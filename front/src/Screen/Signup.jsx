@@ -34,7 +34,8 @@ export default function Signup() {
 
 
   return (
-    <form className='container-md my-4' onSubmit={createUser}>
+    <div className='container-md my-4'>
+    <form onSubmit={createUser}>
         {err && <div className="alert alert-danger">{err}</div>}
        <div>
           <label htmlFor="name" className="form-label">Full name</label>
@@ -58,5 +59,7 @@ export default function Signup() {
         </div>
         <button type='submit' className=' my-4 btn text-light bg-success bg-gradient'>Sign up</button>
       </form>
+      <p>Are you registered already? <a href={`/login`}>Log in!</a> </p>
+    </div>
   )
 }

@@ -163,6 +163,11 @@ const savePost = async(req,res) => {
     // console.log(post._id)
     try {
         const isSave = user.saved.includes(post._id)
+        if(user.saved.length === 5){
+            return res.status(400).json({message:"Ups! You can only save 5 jobs at the time!"})
+        }
+
+
         if(isSave){
             user.saved.pull(post._id);
             await user.save();

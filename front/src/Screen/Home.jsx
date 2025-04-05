@@ -25,18 +25,19 @@ export default function Home() {
   return (
     <>
       <div >
-        <ToastMessage />
 
-        <CarouselComponent posts={posts.slice(0,3)} fetch={findAll}/>
+        <CarouselComponent posts={posts.slice(0,5).reverse()} fetch={findAll}/>
 
+
+        {/* <ToastMessage/> */}
         <div className='container text-center my-4'>
           <h3>Start looking your next role</h3>
           <SearchBar fetch={findAll} />
         </div>
 
-        <div className="container">
+        <div className="container my-4">
           <div className='row'>
-            {posts.map(post => (
+            {posts.slice(0,6).reverse().map(post => (
               <div className='col-md-6 col-lg-4 col-sm-12 g-sm-3 g-3' key={post._id}>
                 <div className="card">
                 <div className="card-body">

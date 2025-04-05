@@ -4,12 +4,14 @@ import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import SaveJob from '../components/SaveJob'
 import ApplyToJob from '../components/ApplyToJob';
+import ToastMessage from '../components/ToastMessage';
 
 export default function JobDescription() {
+    const saved = sessionStorage.getItem('notification')
     const {id} = useParams()
     const navigate = useNavigate();
     const profile = JSON.parse(localStorage.getItem('profile')) || '';
-
+    // const [message, setMessage] = useState();
     const [userProfile, setUserProfile] = useState({
         saved:[],
         profileId:''
@@ -25,16 +27,12 @@ export default function JobDescription() {
         location:'',
         description:'',
         applicants:[],
-        // applicantsId:[],
-        // applicantTitle:[]
-        // applicants:[{
-        // }],
+        
     })
 
     const getJob = async() => {
         const response = await axios.get(`/api/post/${id}`)
         const data = response.data.post
-        // console.log(data.applicants)
         
         setJob({
             id: data._id,
@@ -48,15 +46,9 @@ export default function JobDescription() {
             requirements: data.requirements,
             updatedAt: data.updatedAt.slice(0,10),
             applicants: data.applicants
-            // applicant: data.applicants.map(x => x.name),
-            // applicantId: data.applicants.map(x => x._id),
-            // applicantTitle: data.applicants.map(x => x.title),
-            // applicants: {
-
-            // }
+            
         })
     }
-    console.log(job.author, job.authorId)
 
     const getProfile = async() => {
         const response = await axios.get(`/api/user/${profile.id}`)
@@ -79,7 +71,7 @@ export default function JobDescription() {
         sessionStorage.setItem('notification', response.data.message)
         navigate(`/profile/${profile.id}`)
     }
-
+    
     useEffect(() => {
         getProfile()
         getJob()
@@ -87,7 +79,8 @@ export default function JobDescription() {
   return (
     <>  
         <div className='container my-4'>
-            <a href={`/profile/${job.authorId}`}>
+            <ToastMessage />
+            <a onClick={() => window.history.back()}>
                 <button type="button" className="btn btn-info my-4">
                     Go Back
                 </button>
@@ -102,8 +95,8 @@ export default function JobDescription() {
                     <p className="card-text">Salary: ${job.salary}</p>
                     <p className="card-text">Company: {job.company}</p>
                     <p className="card-text">Location: {job.location}</p>
-                    <p className="card-text">About the role: {job.description}</p>
-                    <p className="card-text">Requirements: {job.requirements}</p>
+                    <p className="card-text">About the role: {job.description ?? 'none'}</p>
+                    <p className="card-text">Requirements: {job.requirements ?? 'none'}</p>
                     <div className='d-flex gap-3'>
                         {profile.id === job.authorId ? (
                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -111,8 +104,13 @@ export default function JobDescription() {
                             </button>
                         ) : ''}
                         
-                        <SaveJob userProfile={userProfile} x={id} fetch={getProfile} />
-                        <ApplyToJob applicants={job.applicants} x={job.id} fetch={getJob} user={userProfile.profileId}/>
+                        {!profile.id ? (<>
+                            <a href={`/login`}><button className='btn btn-success'>Loggin To apply</button></a>
+                        </>) : (<>
+                        
+                            <SaveJob userProfile={userProfile} x={id} fetch={getProfile} />
+                            <ApplyToJob applicants={job.applicants} x={job.id} fetch={getJob} user={userProfile.profileId}/>
+                        </>)}
                     </div>
                     <p className="card-text my-4">Posted By: <a href={`/profile/${job.authorId}`}>{job.author}</a> </p>
                     <p className="card-text my-4">Updated: {job.updatedAt}</p>

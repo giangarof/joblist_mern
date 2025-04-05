@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 
 export default function SearchBar({fetch}) {
-    // console.log(posts)
     const [keyword, setKeyword] = useState('')
     const [suggestions, setSuggestion] = useState([])
 
@@ -10,7 +9,6 @@ export default function SearchBar({fetch}) {
         if (keyword !== '') {
           try {
             const { data } = await axios.get(`/api/post?keyword=${keyword}`);
-            // console.log(data);  
             setSuggestion(data.posts);
           } catch (error) {
             console.error('Error fetching suggestions:', error);

@@ -12,6 +12,7 @@ export default function SaveJob({userProfile, x, fetch}) {
           fetch()
           
         } catch (error) {
+          sessionStorage.setItem('notification', error.response?.data?.message)
           console.log(error.response?.data?.message)
         }
       }

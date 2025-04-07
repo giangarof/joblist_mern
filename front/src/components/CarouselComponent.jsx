@@ -2,12 +2,25 @@ import React,{useEffect, useState} from 'react'
 import { Toast, Carousel  } from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import ToastMessage from './ToastMessage';
+import axios from 'axios';
 
-export default function CarouselComponent({posts, fetch}) {
+export default function CarouselComponent() {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [posts, setPosts] = useState([])
+
+    const fetch = async() => {
+      const response = await axios.get(`/api/post/`)
+      // console.log(response.data.posts)
+      const data = response.data.posts
+
+      const format = data.map(x => ({
+        ...x
+      }))
+      setPosts(format.slice(0,4))
+    }
   
 
     const handleNext = () => {

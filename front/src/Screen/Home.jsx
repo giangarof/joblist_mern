@@ -10,7 +10,7 @@ import SearchBar from '../components/SearchBar';
 export default function Home() {
   const [posts, setPosts] = useState([])
 
-  const findAll = async(keyword) => {
+  const fetch = async(keyword) => {
     const response = await axios.get(`/api/post/`, {
       params: keyword ? {keyword} : {}
     })
@@ -21,18 +21,22 @@ export default function Home() {
     }))
     setPosts(format)
   }
+
+  useEffect(() => {
+    fetch()
+  }, [])
   
   return (
     <>
       <div >
 
-        <CarouselComponent posts={posts.slice(0,5).reverse()} fetch={findAll}/>
+        <CarouselComponent/>
 
 
         {/* <ToastMessage/> */}
         <div className='container text-center my-4'>
           <h3>Start looking your next role</h3>
-          <SearchBar fetch={findAll} />
+          <SearchBar fetch={fetch} />
         </div>
 
         <div className="container my-4">

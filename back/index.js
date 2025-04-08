@@ -13,12 +13,12 @@ const app = express()
 connectDB()
 
 // Express session
-// app.use(session({
-//     secret: process.env.SECRET, // Change this to a secure secret
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: false } // Set to true if using HTTPS
-// }));
+app.use(session({
+    secret: process.env.SECRET, // Change this to a secure secret
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))

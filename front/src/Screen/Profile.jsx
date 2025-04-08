@@ -29,7 +29,7 @@ export default function Profile() {
   const url = async() => {
     const response = await axios.get(`/api/user/${id}`)
     const data = response.data.user;
-    console.log(data._id)
+    // console.log(data._id)
     try {
       setIsLoading(true)
       const formatted = data.posts.map(post => ({
@@ -257,7 +257,7 @@ export default function Profile() {
                                 </div>
                                 <div className="modal-body d-flex gap-1">
                                   <SaveJob userProfile={userProfile} x={x._id} fetch={url}/>
-                                  <ApplyToJob applicants={x.applicants} x={x._id} user={userProfile.id} fetch={url}/>
+                                  <ApplyToJob applicants={x} x={x._id} user={userProfile.id} fetch={url}/>
 
                                 </div>
                                 <div className="modal-footer">

@@ -133,8 +133,10 @@ const applyToJob = async(req,res) => {
     const appliedPost = post.applicants.includes(user._id)
     
     // return res.status(200).json({message:user})
-    // console.log(user._id)
     try {
+        if(req.user._id.equals(post.author[0]._id)){
+            return res.status(400).json({message:"You can't apply to your own job!"})
+        }
         if(appliedUser){
             user.applied.pull(post._id);
             post.applicants.pull(user._id)

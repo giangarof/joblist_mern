@@ -12,8 +12,8 @@ export default function Navigation() {
     try {
       const response = await axios.post('/api/user/logout')
       sessionStorage.setItem('notification', response.data.message)
-      localStorage.removeItem('profile')
       navigate('/login')
+      localStorage.removeItem('profile')
       
     } catch (error) {
       console.log(error)

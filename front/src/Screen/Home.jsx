@@ -19,7 +19,7 @@ export default function Home() {
     const format = data.map(x => ({
       ...x
     }))
-    setPosts(format)
+    setPosts(format.slice(-6).reverse())
   }
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function Home() {
 
         <div className="container my-4">
           <div className='row'>
-            {posts.slice(0,6).reverse().map(post => (
+            {posts.map(post => (
               <div className='col-md-6 col-lg-4 col-sm-12 g-sm-3 g-3' key={post._id}>
                 <div className="card">
                 <div className="card-body">

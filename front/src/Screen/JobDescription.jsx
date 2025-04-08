@@ -8,10 +8,12 @@ import ToastMessage from '../components/ToastMessage';
 
 export default function JobDescription() {
     const saved = sessionStorage.getItem('notification')
+    const [err, setErr] = useState('')
+    // setMessage(saved)
+
     const {id} = useParams()
     const navigate = useNavigate();
     const profile = JSON.parse(localStorage.getItem('profile')) || '';
-    // const [message, setMessage] = useState();
     const [userProfile, setUserProfile] = useState({
         saved:[],
         profileId:''
@@ -79,7 +81,8 @@ export default function JobDescription() {
   return (
     <>  
         <div className='container my-4'>
-            <ToastMessage />
+            <ToastMessage message={err}/>
+            
             <a onClick={() => window.history.back()}>
                 <button type="button" className="btn btn-info my-4">
                     Go Back
@@ -108,8 +111,8 @@ export default function JobDescription() {
                             <a href={`/login`}><button className='btn btn-success'>Loggin To apply</button></a>
                         </>) : (<>
                         
-                            <SaveJob userProfile={userProfile} x={id} fetch={getProfile} />
-                            <ApplyToJob applicants={job.applicants} x={job.id} fetch={getJob} user={userProfile.profileId}/>
+                            <SaveJob userProfile={userProfile} x={id} fetch={getProfile} setErr={setErr}/>
+                            <ApplyToJob applicants={job} x={job.id} fetch={getJob} user={userProfile.profileId} setErr={setErr}/>
                         </>)}
                     </div>
                     <p className="card-text my-4">Posted By: <a href={`/profile/${job.authorId}`}>{job.author}</a> </p>
@@ -146,14 +149,17 @@ export default function JobDescription() {
                         Current Applicants
                     </button>
                     <div className="collapse" id="collapseExample">
-                        {job.applicants.map((x) => (
-                            <div className="card card-body" key={x._id}>
-                                    <a href={`/profile/${x._id}`}>
-                                        {x.name} - {x.title}
-                                    </a>
-
-                            </div>
-                        ))}
+                        <>
+                        {job.applicants.length >= 1 ? (<>
+                            {job.applicants.map((x) => (
+                                <div className="card card-body" key={x._id}>
+                                        <a href={`/profile/${x._id}`}>
+                                            {x.name} - {x.title ?? 'no title specified'}
+                                        </a>
+                                </div>
+                            ))}
+                            </>) : 'No current applicants'}
+                        </>
                     </div>
                 </div>
                 ) : ''

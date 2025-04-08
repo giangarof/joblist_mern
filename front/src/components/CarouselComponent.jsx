@@ -19,7 +19,7 @@ export default function CarouselComponent() {
       const format = data.map(x => ({
         ...x
       }))
-      setPosts(format.slice(0,4))
+      setPosts(format.slice(-4))
     }
   
 
@@ -31,13 +31,18 @@ export default function CarouselComponent() {
         setActiveIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
     };
 
+    
+
     useEffect(() => {
         fetch()
-        const myCarousel = new Carousel('#myCarousel', {
-          interval: 3000, // auto-slide every 3 seconds
-          ride: 'carousel',
-          keyboard: true
-        });
+        const myCarousel = document.getElementById('myCarousel');
+        if (myCarousel) {
+          new Carousel(myCarousel, {
+            interval: 3000,
+            ride: 'carousel',
+            keyboard: true,
+          });
+        }
 
     }, [])
   return (
@@ -49,14 +54,14 @@ export default function CarouselComponent() {
         position: 'relative',  // To keep carousel in the image container
       }}>
         <ToastMessage/>
-      <div id="carouselExampleDark" className='carousel-dark'>
+      <div id="carousel-dark" className='carousel-dark'>
           <div className=''>
               <div className="carousel-indicators ">
               {posts.map((_, index) => (
                 <button
                 key={index}
                 type="button"
-                data-bs-target="#carouselExampleDark"
+                data-bs-target="#myCarousel"
                 data-bs-slide-to={index}
                 className={index === activeIndex ? 'active' : ''}
                 aria-current={index === activeIndex ? 'true' : undefined}
@@ -66,30 +71,28 @@ export default function CarouselComponent() {
               </div>
 
               {posts.map((post,index) => (
-                <div key={post._id} className={`my-5 carousel-item ${index === activeIndex ? 'active' : ''}`} data-bs-interval="10000">
+                <div key={post._id} className={`my-5 carousel-item ${index === activeIndex ? 'active' : ''}`} data-bs-interval="3000">
                   <div className="grid align-items-center my-5 opacity-75" >
                     <div className='row justify-content-center align-iems-center'>
-                      <div className='col-12 text-center bg-secondary-subtle'>
+                      <div className='col-12 text-center bg-secondary-subtle p-3 w-50'>
                         <a href={`/post/${post._id}`}><h5 className='fw-bold'>{post.title}</h5></a>
-
                         <p className='fw-bolder'>{post.description}</p>
                         <p className='fw-bolder'>@{post.company}</p>
-
                       </div>
 
                     </div>
                   </div>
                 </div>
               ))}
-
-              <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev" onClick={handlePrev}>
+              <button className="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" onClick={handlePrev}>
                 <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span className="visually-hidden">Previous</span>
               </button>
-              <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next" onClick={handleNext}>
+              <button className="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" onClick={handleNext}>
                 <span className="carousel-control-next-icon" aria-hidden="true"></span>
                 <span className="visually-hidden">Next</span>
               </button>
+
           </div>
         {/* ))} */}
       </div>

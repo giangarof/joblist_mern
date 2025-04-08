@@ -72,11 +72,11 @@ const logout = async (req,res) => {
         expires: new Date(0)
     })
 
-    if(!req.session.name){
-        return res.status(400).json({message:"cannot log out because you are not log in"})
-    }else {
-        return res.status(200).json({message: `Logged out, ${req.session.name}`})
-    }
+    // if(!req.session.name){
+    //     return res.status(400).json({message:"cannot log out because you are not log in"})
+    // }else {
+        // }
+            return res.status(200).json({message: `Logged out`})
 }
 
 const update = async (req, res) => {
@@ -160,13 +160,16 @@ const savePost = async(req,res) => {
     const user = await User.findById(req.user._id)
     // console.log(user)
     const post = await Post.findById(id);
-    // console.log(post._id)
     try {
         const isSave = user.saved.includes(post._id)
+
+        if(req.user._id.equals(post.author[0]._id)){
+            return res.status(400).json({message:"Ups! You cannot save your own post!"})
+        }
+
         if(user.saved.length === 5){
             return res.status(400).json({message:"Ups! You can only save 5 jobs at the time!"})
         }
-
 
         if(isSave){
             user.saved.pull(post._id);
@@ -183,28 +186,6 @@ const savePost = async(req,res) => {
     }
 }
 
-const applyToJob = async(req,res) => {
-    const {id} = req.params
-    const post = await Post.findById(id)
-    const user = await User.findById(req.user._id)
-    console.log(user.applied)
-    const applied = user.applied.includes(post._id)
-    try {
-        if(applied){
-            user.applied.pull(post._id);
-            await user.save();
-            return res.status(200).json({message:"Applied!"})
-        } else {
-            user.applied.push(post._id);
-            await user.save()
-            return res.status(200).json({message:"Application canceled"})
-        }
-    } catch (error) {
-        throw new Error(error)
-        // return res.status(200).json({message:'applied'})
-    }
-}
-
 export {
     login, 
     signup,
@@ -214,5 +195,4 @@ export {
     getUser,
     deleteUser,
     savePost,
-    applyToJob
 }

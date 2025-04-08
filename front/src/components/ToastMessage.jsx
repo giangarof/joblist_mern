@@ -4,11 +4,14 @@ import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 export default function ToastMessage({message}) {
   const [notification, setNotification] = useState('');
-  const session = sessionStorage.getItem('notification');
+  const session = sessionStorage.getItem('notification') ?? '';
+  // console.log(message)
     
   useEffect(() => {
-    if(session){
-      setNotification(session)
+    const displayMessage = session || message
+    
+    if(displayMessage){
+      setNotification(displayMessage)
       setTimeout(() => {
         
         const toastEl = document.getElementById('liveToast');
@@ -20,7 +23,7 @@ export default function ToastMessage({message}) {
         sessionStorage.removeItem('notification');
       },100)
     }
-  }, [])
+  }, [message])
   return (
     <>
         {notification ? (

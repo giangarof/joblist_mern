@@ -4,19 +4,21 @@ import ExpressError from "./middleware/ExpressError.js"
 import connectDB from "./config/db.js"
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
+import sessionConfig from "./config/session.js"
 import session from "express-session"
+
 dotenv.config()
 
 const app = express()
 connectDB()
 
 // Express session
-app.use(session({
-    secret: process.env.SECRET, // Change this to a secure secret
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
-}));
+// app.use(session({
+//     secret: process.env.SECRET, // Change this to a secure secret
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false } // Set to true if using HTTPS
+// }));
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -24,7 +26,6 @@ app.use(cookieParser())
 
 import user from "./MCR/routes/user.js"
 import post from "./MCR/routes/post.js"
-import sessionConfig from "./config/session.js"
 
 // Routes
 app.use('/api/user', user)

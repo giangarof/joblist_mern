@@ -14,11 +14,12 @@ export default function Home() {
     const response = await axios.get(`/api/post/`, {
       params: keyword ? {keyword} : {}
     })
-    const data = response.data.posts
+    const data = response.data?.posts
 
     const format = data.map(x => ({
       ...x
     }))
+    
     setPosts(format.slice(-6).reverse())
   }
 

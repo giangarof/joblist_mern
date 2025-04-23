@@ -51,7 +51,7 @@ if(process.env.NODE_ENV === 'production'){
 // Error handling
 
 // Using the custom Error handler for all the possible routes 
-app.all('*', (req,res,next) => {
+app.all('/', (req,res,next) => {
     next(new ExpressError('Page Not Found, try again.', 404))
 });
 

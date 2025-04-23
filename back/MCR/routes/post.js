@@ -12,14 +12,16 @@ import {
     findPost,
     deletePost,
     update,
-    applyToJob
-
+    applyToJob,
+    deleteApplicant
 } from '../controllers/post.js';
 import asyncHandler from '../../middleware/asyncHandler.js';
 
 router.get('/', asyncHandler(findAll))
 router.get('/:id', asyncHandler(findPost))
 
+
+router.post('/deleteapplicant/:postId/:userId', asyncHandler(deleteApplicant))
 router.post('/create', protect, asyncHandler(createPost))
 router.post('/apply/:id', protect, asyncHandler(applyToJob))
 

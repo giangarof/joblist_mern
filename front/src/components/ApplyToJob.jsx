@@ -5,8 +5,8 @@ export default function ApplyToJob({ applicants, x, fetch, user, setErr }) {
     // x = job id
     // user = userId
 
-    console.log(applicants.applicants.some((i) => i._id === user))
-    console.log(user)
+    // console.log(applicants.applicants.some((i) => i._id === user))
+    // console.log(user)
 
     // if userId is in the applicants array
     // const applied = applicants.some((i) => i || i_id === user)

@@ -73,6 +73,20 @@ export default function JobDescription() {
         sessionStorage.setItem('notification', response.data.message)
         navigate(`/profile/${profile.id}`)
     }
+
+    const removeApplicant = async(user) => {
+        const res = await axios.post(`/api/post/deleteapplicant/${id}/${user}`)
+        const data = res.data?.message
+        console.log(data)
+        try {
+            console.log(res.data?.message)
+            setErr(data)
+        } catch (error) {
+            console.log(error.response?.data.message)
+            const err = error.response?.data?.message;
+            setErr(err)
+        }
+    }
     
     useEffect(() => {
         getProfile()
@@ -152,10 +166,13 @@ export default function JobDescription() {
                         <>
                         {job.applicants.length >= 1 ? (<>
                             {job.applicants.map((x) => (
-                                <div className="card card-body" key={x._id}>
+                                <div className="d-flex card card-body" key={x._id}>
+                                    <div className='d-flex gap-3 align-items-center align-content-center'>
                                         <a href={`/profile/${x._id}`}>
                                             {x.name} - {x.title ?? 'no title specified'}
-                                        </a>
+                                        </a> -
+                                        <button className='btn btn-danger' onClick={() => removeApplicant(x._id)}> <i className="bi bi-x-lg"></i></button>
+                                    </div>
                                 </div>
                             ))}
                             </>) : 'No current applicants'}

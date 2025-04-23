@@ -156,11 +156,51 @@ const applyToJob = async(req,res) => {
     }
 }
 
+// job applicants info
+// const jobApplicants = async(req,res) => {
+//     const {id} = req.params;
+//     console.log(id)
+// }
+
+// // delete applicants
+const deleteApplicant = async(req,res) => {
+    try {
+        
+        const {postId, userId} = req.params;
+        const user = await User.findById(userId)
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({message:`Post doesn't exist`})
+        }
+
+        if(!user){
+            return res.status(404).json({message:`User doesn't exist`})
+        }
+
+        const isUser = post.applicants.includes(user._id)
+        if(isUser){
+            post.applicants.pull(user._id);
+            await post.save()
+            await user.save()
+            
+            return res.status(200).json({message:`User removed successfully`});
+        } else{
+            return res.status(404).json({message:`No id found in applicants array.`});
+        }
+        
+    } catch (error) {
+        return res.status(404).json({message:error})
+    }
+}
+
+
+
 export {
     findAll,
     createPost,
     findPost,
     deletePost,
     update,
-    applyToJob
+    applyToJob,
+    deleteApplicant
 }

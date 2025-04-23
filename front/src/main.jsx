@@ -27,6 +27,7 @@ import Update from './Screen/Update.jsx'
 import Create from './Screen/Create.jsx'
 import JobDescription from './Screen/JobDescription.jsx'
 import UpdatePost from './Screen/UpdatePost.jsx'
+import JobAdmin from './Screen/JobAdmin.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,6 +45,7 @@ const router = createBrowserRouter(
       <Route path='/create' element={<Create/>} />
       <Route path='/post/:id' element={<JobDescription/>} />
       <Route path='/update/:id' element={<UpdatePost/>} />
+      <Route path='/joblist' element={<JobAdmin/>}/>
 
 
       {/* User */}
